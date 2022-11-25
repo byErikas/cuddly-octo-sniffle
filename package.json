@@ -1,6 +1,6 @@
 {
   "name": "cuddly-octo-sniffle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@bentley/icons-generic": "^1.0.34",
@@ -42,8 +42,10 @@
     "typescript": "~4.4.0"
   },
   "scripts": {
-    "start": "react-scripts --max_old_space_size=4096 --openssl-legacy-provider start",
-    "build": "react-scripts --max_old_space_size=4096 --openssl-legacy-provider build",
+    "start": "react-scripts --max_old_space_size=4096 start",
+    "start-l": "react-scripts --max_old_space_size=4096 --openssl-legacy-provider start",
+    "build": "react-scripts --max_old_space_size=4096 build",
+    "build-l": "react-scripts --max_old_space_size=4096 --openssl-legacy-provider build",
     "test": "react-scripts --max_old_space_size=4096 test",
     "eject": "react-scripts eject"
   },

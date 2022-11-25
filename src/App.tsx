@@ -6,7 +6,7 @@
 import "./App.scss";
 
 import { BrowserAuthorizationClient } from "@itwin/browser-authorization";
-import type { ScreenViewport } from "@itwin/core-frontend";
+import { imageElementFromUrl, IModelConnection, ScreenViewport } from "@itwin/core-frontend";
 import { FitViewTool, IModelApp, StandardViewId } from "@itwin/core-frontend";
 import { FillCentered } from "@itwin/core-react";
 import { ProgressLinear } from "@itwin/itwinui-react";
@@ -30,14 +30,45 @@ import {
   ViewerPerformance,
   ViewerStatusbarItemsProvider,
 } from "@itwin/web-viewer-react";
+
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { history } from "./history";
+// Decorator imports
+
+// Commented out since this is not useful at the moment, maybe add decorator visibility, and some other toggles to it later?
+// import { SettingsUIProvider } from "./MyFirstUiProvider";
+import { ElementOfInterest, decorator } from "./modules/decorators/decorator";
+import { ViewAttributesWidgetProvider } from "./modules/viewAttributes/widget";
+
+import { ViewSetup } from "./common/ViewSetup";
+import { FrontstageManager } from "@itwin/appui-react";
+
 
 const App: React.FC = () => {
   const [iModelId, setIModelId] = useState(process.env.IMJS_IMODEL_ID);
   const [iTwinId, setITwinId] = useState(process.env.IMJS_ITWIN_ID);
 
+  const viewportOptions = {
+    viewState: ViewSetup.getDefaultView,
+  };
+
+  /**
+    * List of model elements we will create markers for.
+    * Element ID's are still weird to get, but the "0x12c" refers to the Front Door,
+    * as the "title suggests"
+    * @param id 0x12c Front Door
+    */
+  const elements: ElementOfInterest[] = [
+    {
+      id: "0x12c", title: "Front Door", viewOrientation: StandardViewId.Front,
+    }
+  ];
+
+  /**
+   * Our marker image
+   */
+  const markerImagePromise = imageElementFromUrl("beans.svg");
   const accessToken = useAccessToken();
 
   const authClient = useMemo(
@@ -80,20 +111,15 @@ const App: React.FC = () => {
 
       if (urlParams.has("iModelId")) {
         setIModelId(urlParams.get("iModelId") as string);
+      } else {
+        if (!process.env.IMJS_IMODEL_ID) {
+          throw new Error(
+            "Please add a valid iModel ID in the .env file and restart the application or add it to the iModelId query parameter in the url and refresh the page. See the README for more information."
+          );
+        }
       }
     }
   }, [accessToken]);
-
-  useEffect(() => {
-    if (accessToken && iTwinId) {
-      let queryString = `?iTwinId=${iTwinId}`;
-      if (iModelId) {
-        queryString += `&iModelId=${iModelId}`;
-      }
-
-      history.push(queryString);
-    }
-  }, [accessToken, iTwinId, iModelId]);
 
   /** NOTE: This function will execute the "Fit View" tool after the iModel is loaded into the Viewer.
    * This will provide an "optimal" view of the model. However, it will override any default views that are
@@ -108,7 +134,7 @@ const App: React.FC = () => {
         const intvl = setInterval(() => {
           if (viewPort.areAllTileTreesLoaded) {
             ViewerPerformance.addMark("TilesLoaded");
-            ViewerPerformance.addMeasure(
+            void ViewerPerformance.addMeasure(
               "TileTreesLoaded",
               "ViewerStarting",
               "TilesLoaded"
@@ -142,6 +168,24 @@ const App: React.FC = () => {
     await MeasureTools.startup();
   }, []);
 
+  // Once the model is loaded:
+  const onIModelConnected = async (_imodel: IModelConnection) => {
+
+    //Instantiate out Decorators.
+    const elementOfInterestDecorator = new decorator(
+      elements,
+      await markerImagePromise,
+      _imodel
+    );
+    IModelApp.viewManager.addDecorator(elementOfInterestDecorator);
+  }
+
+  // Define panel size
+  FrontstageManager.onFrontstageReadyEvent.addListener((event) => {
+    const { bottomPanel } = event.frontstageDef;
+    bottomPanel && (bottomPanel.size = 270);
+  });
+
   return (
     <div className="viewer-container">
       {!accessToken && (
@@ -155,22 +199,25 @@ const App: React.FC = () => {
         iTwinId={iTwinId ?? ""}
         iModelId={iModelId ?? ""}
         authClient={authClient}
+        viewportOptions={viewportOptions}
         viewCreatorOptions={viewCreatorOptions}
-        enablePerformanceMonitors={true} // see description in the README (https://www.npmjs.com/package/@itwin/web-viewer-react)
+        enablePerformanceMonitors={true}
         onIModelAppInit={onIModelAppInit}
+        onIModelConnected={onIModelConnected}
         uiProviders={[
           new ViewerNavigationToolsProvider(),
+          new ViewerStatusbarItemsProvider(),
+          new TreeWidgetUiItemsProvider(),
+          new MeasureToolsUiItemsProvider(),
+          new ViewAttributesWidgetProvider(),
+          new PropertyGridUiItemsProvider({
+            enableCopyingPropertyText: true,
+          }),
           new ViewerContentToolsProvider({
             vertical: {
               measureGroup: false,
             },
           }),
-          new ViewerStatusbarItemsProvider(),
-          new TreeWidgetUiItemsProvider(),
-          new PropertyGridUiItemsProvider({
-            enableCopyingPropertyText: true,
-          }),
-          new MeasureToolsUiItemsProvider(),
         ]}
       />
     </div>
