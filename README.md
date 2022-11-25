@@ -1,3 +1,15 @@
+# cuddly-octo-sniffle
+
+Built on `Node.js v18.12.1 (LTS)`
+
+## Setting up:
+- install prequisites, starting with Node.js (LTS) https://nodejs.org/en/
+- clone this repository
+- on your terminal and run `npm install`
+- set up the .env file, an example is included
+- set up the `.env` file, an example file is included
+- using your terminal run `npm start` (if that fails try `npm run start-l`)
+
 # Getting Started with the iTwin Viewer Create React App Template
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
