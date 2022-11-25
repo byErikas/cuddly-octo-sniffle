@@ -3,7 +3,7 @@
 Built on `Node.js v18.12.1 (LTS)`
 
 ## Setting up:
-- install prequisites, starting with Node.js (LTS) https://nodejs.org/en/
+- install Node.js (LTS) https://nodejs.org/en/
 - clone this repository
 - on your terminal and run `npm install`
 - set up the .env file, an example is included
