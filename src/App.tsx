@@ -43,6 +43,8 @@ import { ViewAttributesWidgetProvider } from "./modules/viewAttributes/widget";
 
 import { ViewSetup } from "./common/ViewSetup";
 import { FrontstageManager } from "@itwin/appui-react";
+import { heatmapDecorator, HeatmapElement } from "./modules/heatmap-decorator/decorator";
+import { Point3d } from "@itwin/core-geometry";
 
 
 const App: React.FC = () => {
@@ -65,10 +67,17 @@ const App: React.FC = () => {
     }
   ];
 
+  const heatmapElements: HeatmapElement[] = [
+    {
+      title: "Wall or something", position: new Point3d(11, -3, 3.33)
+    }
+  ];
+
   /**
    * Our marker image
    */
   const markerImagePromise = imageElementFromUrl("beans.svg");
+  const heatmapImagePromise = imageElementFromUrl("heat.png");
   const accessToken = useAccessToken();
 
   const authClient = useMemo(
@@ -178,6 +187,13 @@ const App: React.FC = () => {
       _imodel
     );
     IModelApp.viewManager.addDecorator(elementOfInterestDecorator);
+
+    const heatDecorator = new heatmapDecorator(
+      heatmapElements,
+      await heatmapImagePromise,
+      _imodel
+    );
+    IModelApp.viewManager.addDecorator(heatDecorator);
   }
 
   // Define panel size
