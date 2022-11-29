@@ -170,6 +170,7 @@ const App: React.FC = () => {
       await heatmapImagePromise,
       _imodel
     );
+
     IModelApp.viewManager.addDecorator(heatDecorator);
   }
 

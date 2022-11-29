@@ -18,7 +18,7 @@ export class heatmapMarker extends Marker {
     worldLocation: Point3d,
   ) {
     // Use the same height for all the markers, but preserve the aspect ratio from the image
-    super(worldLocation, new Point2d(image.width * (heatmapMarker._height / image.height), image.height));
+    super(worldLocation, new Point2d(200, 200));
     this._onMouseButtonCallback = onMouseButtonCallback;
     this.title = title; // The title  will be shown as a tooltip when the user interacts with the marker
     this.setImage(image);
