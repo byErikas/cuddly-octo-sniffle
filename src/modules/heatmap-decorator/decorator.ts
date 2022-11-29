@@ -12,7 +12,6 @@ import {
   NotifyMessageDetails
 } from "@itwin/core-frontend";
 import { Point2d, Point3d } from "@itwin/core-geometry";
-import { isIPv4 } from "net";
 import { heatmapMarker } from "./marker";
 
 export interface HeatmapElement {
@@ -82,33 +81,6 @@ export class heatmapDecorator implements Decorator {
     /* This method is called for every rendering frame. */
     if (context.viewport.view.isSpatialView()) {
       this._markers.forEach((marker) => {
-        // const vp = context.viewport;
-
-        // const frustumFrac = IModelApp.viewManager.selectedView
-        //   ?.getFrustum()
-        //   .getFraction();
-
-        // // var size = (vp.pixelsPerInch / 10) / (frustumFrac || 1);
-
-        // console.log(frustumFrac);
-
-        // const maxSize = 500;
-        // const inMin = 0.24;
-        // const InMax = 0.0006;
-
-        // var size = ((frustumFrac || 1) - inMin) * (maxSize - 10) / (InMax - inMin) + 10;
-
-        // console.log(size);
-
-        // // if
-        // marker.size = new Point2d(size, size);
-
-        // //   console.log(frustumFrac);
-        // //   const frustumCalc = 10 / ((frustumFrac || 1));
-        // //   marker.size = new Point2d(
-        // //     frustumCalc,
-        // //     frustumCalc
-        // //   );
         marker.addDecoration(context);
       });
     }
