@@ -116,9 +116,6 @@ export const ViewAttributesWidget = () => {
             disabled={attrValuesState.renderMode === RenderMode.Wireframe || (attrValuesState.renderMode === RenderMode.SmoothShade && !attrValuesState.viewFlags.visibleEdges)} />
         </div>
       </div>
-      <Alert type="informational" className="instructions">
-        Use the controls to change the view attributes
-      </Alert>
     </div>
   );
 };

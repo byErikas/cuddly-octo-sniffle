@@ -38,7 +38,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 // Commented out since this is not useful at the moment, maybe add decorator visibility, and some other toggles to it later?
 // import { SettingsUIProvider } from "./MyFirstUiProvider";
-import { ElementOfInterest, decorator } from "./modules/decorators/decorator";
 import { ViewAttributesWidgetProvider } from "./modules/viewAttributes/widget";
 
 import { ViewSetup } from "./common/ViewSetup";
@@ -55,28 +54,15 @@ const App: React.FC = () => {
     viewState: ViewSetup.getDefaultView,
   };
 
-  /**
-    * List of model elements we will create markers for.
-    * Element ID's are still weird to get, but the "0x12c" refers to the Front Door,
-    * as the "title suggests"
-    * @param id 0x12c Front Door
-    */
-  const elements: ElementOfInterest[] = [
-    {
-      id: "0x12c", title: "Front Door", viewOrientation: StandardViewId.Front,
-    }
-  ];
-
   const heatmapElements: HeatmapElement[] = [
     {
-      title: "Wall or something", position: new Point3d(11, -3, 3.33)
+      id: "0x904", title: "Point", position: new Point3d(11, -3, 3.33), viewOrientation: StandardViewId.Front
     }
   ];
 
   /**
    * Our marker image
    */
-  const markerImagePromise = imageElementFromUrl("beans.svg");
   const heatmapImagePromise = imageElementFromUrl("heat.png");
   const accessToken = useAccessToken();
 
@@ -179,15 +165,6 @@ const App: React.FC = () => {
 
   // Once the model is loaded:
   const onIModelConnected = async (_imodel: IModelConnection) => {
-
-    //Instantiate out Decorators.
-    const elementOfInterestDecorator = new decorator(
-      elements,
-      await markerImagePromise,
-      _imodel
-    );
-    IModelApp.viewManager.addDecorator(elementOfInterestDecorator);
-
     const heatDecorator = new heatmapDecorator(
       heatmapElements,
       await heatmapImagePromise,
@@ -199,7 +176,7 @@ const App: React.FC = () => {
   // Define panel size
   FrontstageManager.onFrontstageReadyEvent.addListener((event) => {
     const { bottomPanel } = event.frontstageDef;
-    bottomPanel && (bottomPanel.size = 270);
+    bottomPanel && (bottomPanel.size = 200);
   });
 
   return (

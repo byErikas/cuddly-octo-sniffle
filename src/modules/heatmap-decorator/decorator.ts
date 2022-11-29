@@ -7,13 +7,18 @@ import {
   Decorator,
   IModelApp,
   IModelConnection,
+  StandardViewId,
+  OutputMessagePriority,
+  NotifyMessageDetails
 } from "@itwin/core-frontend";
-import { Point3d } from "@itwin/core-geometry";
+import { Point2d, Point3d } from "@itwin/core-geometry";
 import { heatmapMarker } from "./marker";
 
 export interface HeatmapElement {
+  id: Id64String,
   title: string;
   position: Point3d;
+  viewOrientation: StandardViewId
 }
 
 /** A Decorator can be registered with ViewManager.addDecorator. Once registered, the decorate method will be called
@@ -22,6 +27,14 @@ export interface HeatmapElement {
 export class heatmapDecorator implements Decorator {
   private _markers: heatmapMarker[] = [];
 
+  private _zoomToElementCallback = (elementId: Id64String, viewOrientation: StandardViewId) => {
+    const vp = IModelApp.viewManager.selectedView;
+    if (vp !== undefined) {
+      vp.saveViewUndo();
+      vp.zoomToElements(elementId, { standardViewId: viewOrientation, animateFrustumChange: true })
+    }
+  }
+
   private _createMarker = (
     element: HeatmapElement,
     image: HTMLImageElement,
@@ -29,9 +42,26 @@ export class heatmapDecorator implements Decorator {
     pos: Point3d
   ) => {
 
-    this._markers.push(
-      new heatmapMarker(image, element.title, ()=>{} , pos)
-    );
+    const _onMouseButtonCallback = () => {
+      this._zoomToElementCallback(element.id, element.viewOrientation);
+      IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "Zoomed in!"));
+      var htmlElement = document.createElement("Issue");
+      htmlElement.innerHTML = "<div style='width: 200px;'><div>Kortele su informacija apie nezinau ka.</div></div>";
+
+      var pointProps = new Point2d(200, 200);
+      var offset = new Point2d(0, 0);
+      setTimeout(() => {
+        IModelApp.uiAdmin.showCard(htmlElement, "Issue", undefined, pointProps, offset, () => { }, () => {
+          IModelApp.uiAdmin.hideCard();
+          IModelApp.viewManager.selectedView?.doUndo();
+        });
+        IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "Click outside of the card to close it."));
+      }, 500);
+    };
+    iModel.elements.getPlacements(element.id).then((placements) => {
+      var elementCenter = placements[0].getWorldCorners().getCenter();
+      this._markers.push(new heatmapMarker(image, element.title, _onMouseButtonCallback, elementCenter));
+    });
   };
 
   constructor(

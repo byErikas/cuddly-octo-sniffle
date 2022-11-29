@@ -38,7 +38,7 @@ export class SettingsUIProvider implements UiItemsProvider {
         // It needs to have a unique ID.
         id: 'HelloWidget',
         // It also has to have some kind of name that is displayed as a tab title.
-        label: 'Hello',
+        label: 'Suggestion',
 
         // Then we can define the actual content of the widget.
         // Here you can pass in React components that can be complicated, have
@@ -47,9 +47,9 @@ export class SettingsUIProvider implements UiItemsProvider {
         getWidgetContent() {
           // In our case it is just text element (span) with the text "Hello World".
           return <span>"Hello World"</span>;
-        },
+        }
       };
-      
+
       // We add (push) this one widget that we have defined into the array that
       // we created previously. This array is then passed further down the line
       // and all of the widgets defined in it are rendered in iTwin.
