@@ -20,19 +20,20 @@ export class decorator implements Decorator {
   private _zoomToElementCallback = (elementId: Id64String, viewOrientation: StandardViewId) => {
     const vp = IModelApp.viewManager.selectedView;
     if (vp !== undefined)
-      vp.zoomToElements(elementId, {standardViewId: viewOrientation, animateFrustumChange: true})
+      vp.zoomToElements(elementId, { standardViewId: viewOrientation, animateFrustumChange: true })
   }
 
-  private _createMarker = (element: ElementOfInterest, image: HTMLImageElement, iModel: IModelConnection, ) => {
+  private _createMarker = (element: ElementOfInterest, image: HTMLImageElement, iModel: IModelConnection,) => {
     const _onMouseButtonCallback = () => this._zoomToElementCallback(element.id, element.viewOrientation);
     iModel.elements.getPlacements(element.id).then((placements) => {
-      const elementCenter = placements[0].getWorldCorners().getCenter();
+      var elementCenter = placements[0].getWorldCorners().getCenter();
+
       this._markers.push(new marker(image, element.title, _onMouseButtonCallback, elementCenter));
     });
   }
 
   constructor(elements: ElementOfInterest[], image: HTMLImageElement, iModel: IModelConnection) {
-    elements.forEach((element) => {this._createMarker(element, image, iModel)});
+    elements.forEach((element) => { this._createMarker(element, image, iModel) });
   }
 
   /** Implement this method to add Decorations into the supplied DecorateContext. */
