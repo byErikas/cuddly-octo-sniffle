@@ -7,7 +7,7 @@ import { AbstractWidgetProps, StagePanelLocation, StagePanelSection, UiItemsProv
 import { RenderMode } from "@itwin/core-common";
 import { IModelApp } from "@itwin/core-frontend";
 import { SvgHelpCircularHollow } from "@itwin/itwinui-icons-react";
-import { Alert, IconButton, Select, Slider, Text, ToggleSwitch, Tooltip } from "@itwin/itwinui-react";
+import { IconButton, Select, Slider, Text, ToggleSwitch, Tooltip } from "@itwin/itwinui-react";
 import { AttrValues, api, ViewFlag } from "./api";
 import "./style.scss";
 

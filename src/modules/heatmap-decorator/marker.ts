@@ -8,6 +8,7 @@ import { Point2d, Point3d } from "@itwin/core-geometry";
 export class heatmapMarker extends Marker {
 
   //Possibly retire the height element later, as the heat map could be of variable size? @Erikas
+  private static _height = 155;
   private _onMouseButtonCallback: any;
 
   constructor(
@@ -17,7 +18,7 @@ export class heatmapMarker extends Marker {
     worldLocation: Point3d,
   ) {
     // Use the same height for all the markers, but preserve the aspect ratio from the image
-    super(worldLocation, new Point2d(image.width, image.height));
+    super(worldLocation, new Point2d(image.width * (heatmapMarker._height / image.height), image.height));
     this._onMouseButtonCallback = onMouseButtonCallback;
     this.title = title; // The title  will be shown as a tooltip when the user interacts with the marker
     this.setImage(image);

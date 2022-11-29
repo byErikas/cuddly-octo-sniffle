@@ -46,12 +46,14 @@ export class heatmapDecorator implements Decorator {
       this._zoomToElementCallback(element.id, element.viewOrientation);
       IModelApp.notifications.outputMessage(new NotifyMessageDetails(OutputMessagePriority.Info, "Zoomed in!"));
       var htmlElement = document.createElement("Issue");
-      htmlElement.innerHTML = "<div style='width: 200px;'><div>Kortele su informacija apie nezinau ka.</div></div>";
+      htmlElement.innerHTML = "<div style='width: fit-content;'><div style='text-align:center'>Thermal Bridges:</div><div style='text-align:center'><b>Allowed:</b> R=0,11(W/(m*K))</div>" +
+        "<div style='text-align:center'><b>Current:</b> R=0,20(W/(m*K))<hr><div style='text-align:center'>Exceeding by: <b style='color: red;'>81%</b></div><div style='text-align:center'>(<b style='color:red'>Critical</b>, reconstruction mandatory)</div><hr>" +
+        "<div style='text-align:center'>Suggested solution:</div><div style='text-align:center'><b>Add more insulation material</b>: <em>XPS</em></div><div style='text-align: center'><img style='width: 150px' src='foam.png'/></div><div style='text-align: center;'>125 cm x 60 cm x 3 cm</div></div>";
 
-      var pointProps = new Point2d(200, 200);
+      var pointProps = new Point2d(200, 400);
       var offset = new Point2d(0, 0);
       setTimeout(() => {
-        IModelApp.uiAdmin.showCard(htmlElement, "Issue", undefined, pointProps, offset, () => { }, () => {
+        IModelApp.uiAdmin.showCard(htmlElement, "", undefined, pointProps, offset, () => { }, () => {
           IModelApp.uiAdmin.hideCard();
           IModelApp.viewManager.selectedView?.doUndo();
         });
